@@ -1,0 +1,42 @@
+name: workout
+description: "."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  shared_preferences: ^2.3.3
+  provider: ^6.1.2
+  cupertino_icons: ^1.0.8
+  audioplayers: ^6.1.0
+  #audioplayers: ^6.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/images/icon.png"
+  remove_alpha_ios: true # Rimuove il canale alpha per le icone iOS
+  adaptive_icon_background: "#FFFFFF" # Sfondo per le icone Android adattive
+  adaptive_icon_foreground: "assets/images/icon.png"
+
+flutter:
+  uses-material-design: true
+  fonts:
+    - family: BebasNeue
+      fonts:
+        - asset: assets/fonts/BebasNeue-Regular.ttf
+  assets:
+    - assets/images/icon.png
+    - assets/sounds/beep.mp3
+    - assets/sounds/single_beep.mp3
