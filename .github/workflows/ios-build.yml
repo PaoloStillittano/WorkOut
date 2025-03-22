@@ -1,0 +1,29 @@
+name: Build Flutter iOS App
+
+on:
+  workflow_dispatch: # lo esegui manualmente da GitHub
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build iOS
+        run: flutter build ipa --release
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-ipa
+          path: build/ios/ipa/*.ipa
