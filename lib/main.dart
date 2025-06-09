@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Aggiungi questo import
 import 'package:provider/provider.dart';
 import 'screens/workout_page.dart';
 import 'controllers/theme_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  
+  // Blocca l'orientamento solo in verticale
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  
   final themeController = ThemeController();
   await themeController.loadThemePreference();
-
   runApp(
     ChangeNotifierProvider(
       create: (_) => themeController,

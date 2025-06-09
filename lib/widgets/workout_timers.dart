@@ -31,7 +31,7 @@ class WorkoutTimers extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
               side: BorderSide(
-                color: Colors.white.withOpacity(0.5), // Leggero bordo bianco
+                color: Colors.white.withAlpha(150),
                 width: 1,
               ),
             ),
@@ -68,7 +68,7 @@ class WorkoutTimers extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
                 side: BorderSide(
-                  color: Colors.white.withOpacity(0.5), // Leggero bordo bianco
+                  color: Colors.white.withAlpha(150),
                   width: 1,
                 ),
               ),

@@ -81,7 +81,7 @@ class TimerDisplay extends StatelessWidget {
                         timeComponents['period']!.toLowerCase(),
                         style: TextStyle(
                           fontSize: 16,
-                          color: textColor?.withOpacity(0.7),
+                          color: textColor,
                           fontWeight: FontWeight.w300,
                         ),
                       ),

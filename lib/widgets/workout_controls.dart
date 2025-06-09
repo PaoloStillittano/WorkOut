@@ -30,7 +30,7 @@ class WorkoutControls extends StatelessWidget {
           ),
           label: Text(
             isWorkoutRunning ? 'Pausa' : 'Avvia',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.white),
           ),
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 13),
@@ -53,7 +53,7 @@ class WorkoutControls extends StatelessWidget {
           ),
           label: const Text(
             'Stop',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.white),
           ),
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 13),
