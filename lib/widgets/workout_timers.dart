@@ -21,78 +21,46 @@ class WorkoutTimers extends StatelessWidget {
   Widget build(BuildContext context) {
     final textColor = Theme.of(context).textTheme.bodyLarge?.color;
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Expanded(
-          child: Card(
-            elevation: 4,
-            margin: const EdgeInsets.all(8.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(
-                color: Colors.white.withAlpha(150),
-                width: 1,
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  Text(
-                    'Tempo Allenamento',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: textColor,
-                    ),
-                  ),
-                  Text(
-                    TimeFormatter.formatSeconds(workoutSeconds),
-                    style: TextStyle(
-                      fontSize: 50,
-                      fontWeight: FontWeight.bold,
-                      color: textColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          child: GestureDetector(
-            onTap: isPauseRunning ? onStopPause : onStartPause,
+    return IntrinsicHeight(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
             child: Card(
               elevation: 4,
-              margin: const EdgeInsets.all(8.0),
+              margin: const EdgeInsets.all(6.0),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
                 side: BorderSide(
-                  color: Colors.white.withAlpha(150),
+                  color: Colors.white.withAlpha(40),
                   width: 1,
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(12.0),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      isPauseRunning
-                          ? 'Pausa in corso'
-                          : 'Tap per iniziare pausa',
+                      'Tempo Allenamento',
                       style: TextStyle(
                         fontSize: 20,
                         color: textColor,
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                    Text(
-                      TimeFormatter.formatSeconds(pauseSeconds),
-                      style: TextStyle(
-                        fontSize: 50,
-                        fontWeight: FontWeight.bold,
-                        color: isPauseRunning
-                            ? Theme.of(context).colorScheme.primary
-                            : textColor,
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: Text(
+                          TimeFormatter.formatSeconds(workoutSeconds),
+                          style: const TextStyle(
+                            fontSize: 35,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -100,8 +68,58 @@ class WorkoutTimers extends StatelessWidget {
               ),
             ),
           ),
-        ),
-      ],
+          Expanded(
+            child: GestureDetector(
+              onTap: isPauseRunning ? onStopPause : onStartPause,
+              child: Card(
+                elevation: 4,
+                margin: const EdgeInsets.all(6.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(
+                    color: Colors.white.withAlpha(40),
+                    width: 1,
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        isPauseRunning
+                            ? 'Pausa in corso'
+                            : 'Tap per iniziare pausa',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: textColor,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      Expanded(
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: Text(
+                            TimeFormatter.formatSeconds(pauseSeconds),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 35,
+                              color: isPauseRunning
+                                  ? Theme.of(context).colorScheme.primary
+                                  : textColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -18,55 +18,102 @@ class WorkoutControls extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        // Start/Pause Button
-        ElevatedButton.icon(
-          icon: Icon(
-            isWorkoutRunning ? Icons.pause : Icons.play_arrow,
-            size: 24,
-            color: Colors.white,
-          ),
-          label: Text(
-            isWorkoutRunning ? 'Pausa' : 'Avvia',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.white),
-          ),
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 13),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Container(
+              height: 60,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: isWorkoutRunning
+                      ? [
+                          colorScheme.secondary,
+                          colorScheme.secondary.withAlpha(200),
+                        ]
+                      : [
+                          colorScheme.primary,
+                          colorScheme.primary.withAlpha(200),
+                        ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ElevatedButton.icon(
+                icon: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: Icon(
+                    isWorkoutRunning ? Icons.pause : Icons.play_arrow,
+                    key: ValueKey(isWorkoutRunning),
+                    size: 28,
+                    color: Colors.white,
+                  ),
+                ),
+                label: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: Text(
+                    isWorkoutRunning ? 'Pausa' : 'Avvia',
+                    key: ValueKey(isWorkoutRunning),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                onPressed: isWorkoutRunning ? onPause : onStart,
+              ),
             ),
-            elevation: 4,
-            backgroundColor:
-                isWorkoutRunning ? colorScheme.secondary : colorScheme.primary,
-            foregroundColor: Colors.white,
           ),
-          onPressed: isWorkoutRunning ? onPause : onStart,
-        ),
-        // Stop Button
-        ElevatedButton.icon(
-          icon: const Icon(
-            Icons.stop,
-            size: 24,
-            color: Colors.white,
-          ),
-          label: const Text(
-            'Stop',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.white),
-          ),
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 13),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+
+          const SizedBox(width: 16),
+
+          // Bottone Stop
+          Expanded(
+            child: Container(
+              height: 60,
+              decoration: BoxDecoration(
+                color: Colors.red.withAlpha(240),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ElevatedButton.icon(
+                icon: const Icon(
+                  Icons.stop,
+                  size: 24,
+                  color: Colors.white,
+                ),
+                label: const Text(
+                  'Stop',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                onPressed: onStop,
+              ),
             ),
-            elevation: 4,
-            backgroundColor: Colors.red,
-            foregroundColor: Colors.white,
           ),
-          onPressed: onStop,
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

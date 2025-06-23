@@ -5,8 +5,7 @@ import '../widgets/workout_controls.dart';
 import '../widgets/counter_display.dart';
 import '../widgets/workout_timers.dart';
 import '../controllers/workout_controller.dart';
-import 'package:provider/provider.dart';
-import '../controllers/theme_controller.dart';
+import '../widgets/app_bar.dart';
 
 class WorkoutPage extends StatefulWidget {
   const WorkoutPage({super.key});
@@ -45,114 +44,81 @@ class _WorkoutPageState extends State<WorkoutPage> {
     super.dispose();
   }
 
+  void _navigateToConfig() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ConfigPage()),
+    );
+    await controller.reloadConfig();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      appBar: AppBar(
-        title: RichText(
-          textAlign: TextAlign.center,
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: 'W',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize:
-                        (Theme.of(context).textTheme.titleLarge?.fontSize ??
-                                18.0) *
-                            1.2,
-                    letterSpacing: 2.0),
-              ),
-              TextSpan(
-                text: 'ork',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    ?.copyWith(letterSpacing: 3.0),
-              ),
-              TextSpan(
-                text: 'O',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize:
-                        (Theme.of(context).textTheme.titleLarge?.fontSize ??
-                                18.0) *
-                            1.2,
-                    letterSpacing: 2.0),
-              ),
-              TextSpan(
-                text: 'ut',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
+      backgroundColor: colorScheme.background,
+      appBar: WorkoutAppBar(
+        onSettingsPressed: _navigateToConfig,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              colorScheme.background,
+              colorScheme.surface.withAlpha(50),
             ],
           ),
         ),
-        centerTitle: true,
-        actions: [
-          // Pulsante per il tema
-          Consumer<ThemeController>(
-            builder: (context, themeController, child) => IconButton(
-              icon: Icon(
-                themeController.themeMode == ThemeMode.dark
-                    ? Icons.light_mode
-                    : Icons.dark_mode,
-              ),
-              onPressed: () {
-                themeController.setThemeMode(
-                  themeController.themeMode == ThemeMode.dark
-                      ? ThemeMode.light
-                      : ThemeMode.dark,
-                );
-              },
-              tooltip: themeController.themeMode == ThemeMode.dark
-                  ? 'Passa al tema chiaro'
-                  : 'Passa al tema scuro',
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                // Timer principale
+                TimerDisplay(currentTime: controller.currentTime),
+
+                const SizedBox(height: 15),
+
+                // Timer di workout e pausa
+                WorkoutTimers(
+                  workoutSeconds: controller.workoutSeconds,
+                  pauseSeconds: controller.pauseSeconds,
+                  isPauseRunning: controller.isPauseRunning,
+                  onStartPause: controller.startPauseTimer,
+                  onStopPause: controller.stopPauseTimer,
+                ),
+
+                const SizedBox(height: 10),
+
+                // Contatori (Set, Serie, Ripetizioni)
+                CounterDisplay(
+                  sets: controller.sets,
+                  series: controller.series,
+                  reps: controller.reps,
+                  maxSets: controller.maxSets,
+                  maxSeries: controller.maxSeries,
+                  maxReps: controller.maxReps,
+                  onIncrementReps: controller.incrementReps,
+                  onDecrementReps: controller.decrementReps,
+                ),
+
+                const SizedBox(height: 6),
+
+                // Controlli workout
+                WorkoutControls(
+                  isWorkoutRunning: controller.isWorkoutRunning,
+                  onStart: controller.startWorkoutTimer,
+                  onPause: controller.pauseWorkoutTimer,
+                  onStop: controller.stopWorkout,
+                ),
+
+                const SizedBox(height: 5),
+              ],
             ),
           ),
-          // Pulsante delle impostazioni
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ConfigPage()),
-              );
-              await controller.reloadConfig();
-              setState(() {});
-            },
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            TimerDisplay(currentTime: controller.currentTime),
-            WorkoutTimers(
-              workoutSeconds: controller.workoutSeconds,
-              pauseSeconds: controller.pauseSeconds,
-              isPauseRunning: controller.isPauseRunning,
-              onStartPause: controller.startPauseTimer,
-              onStopPause: controller.stopPauseTimer,
-            ),
-            CounterDisplay(
-              sets: controller.sets,
-              series: controller.series,
-              reps: controller.reps,
-              maxSets: controller.maxSets,
-              maxSeries: controller.maxSeries,
-              maxReps: controller.maxReps,
-              onIncrementReps: controller.incrementReps,
-              onDecrementReps: controller.decrementReps,
-            ),
-            WorkoutControls(
-              isWorkoutRunning: controller.isWorkoutRunning,
-              onStart: controller.startWorkoutTimer,
-              onPause: controller.pauseWorkoutTimer,
-              onStop: controller.stopWorkout,
-            ),
-          ],
         ),
       ),
     );

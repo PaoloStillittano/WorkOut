@@ -35,9 +35,9 @@ class MyApp extends StatelessWidget {
           themeMode: themeController.themeMode,
           theme: ThemeData(
             fontFamily: 'BebasNeue',
-            colorScheme: const ColorScheme.light(
+            colorScheme: ColorScheme.light(
               primary: Colors.blue,
-              secondary: Colors.blueAccent,
+              secondary: Colors.blue.withAlpha(200),
               surface: Colors.white,
             ),
             cardColor: Colors.white,
@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
             fontFamily: 'BebasNeue',
             colorScheme: ColorScheme.dark(
               primary: Colors.blue,
-              secondary: Colors.blueAccent,
+              secondary: Colors.blue.withAlpha(200),
               surface: Colors.grey[900]!,
             ),
             cardColor: Colors.grey[850],

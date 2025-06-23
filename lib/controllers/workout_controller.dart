@@ -11,12 +11,10 @@ class WorkoutController extends ChangeNotifier {
   int workoutSeconds = 0;
   int pauseSeconds = 90;
 
-  // Rimuoviamo final per permettere l'aggiornamento dai settings
   int _maxSets = WorkoutConstants.maxSets;
   int _maxSeries = WorkoutConstants.maxSeries;
   int _maxReps = WorkoutConstants.maxReps;
 
-  // Getters per i valori massimi
   int get maxSets => _maxSets;
   int get maxSeries => _maxSeries;
   int get maxReps => _maxReps;
@@ -59,23 +57,17 @@ class WorkoutController extends ChangeNotifier {
       pauseSeconds = configController.restTimeSeconds;
     }
 
-    // if (sets > _maxSets) sets = _maxSets;
-    // if (series > _maxSeries) series = _maxSeries;
-    // if (reps > _maxReps) reps = _maxReps;
-
     notifyListeners();
   }
 
   Future<void> playNotificationSound() async {
     try {
       await SystemSound.play(SystemSoundType.alert);
-      // Backup plan se il suono principale non funziona
       await HapticFeedback.vibrate();
       debugPrint('Sound played successfully');
     } catch (e) {
       debugPrint('Error playing sound: $e');
       try {
-        // Prova con un altro tipo di suono
         await SystemSound.play(SystemSoundType.click);
       } catch (e) {
         debugPrint('Error playing backup sound: $e');
@@ -132,7 +124,6 @@ class WorkoutController extends ChangeNotifier {
         stopPauseTimer();
         if (_context != null && _context!.mounted) {
           try {
-            // Usa AssetSource invece di UrlSource
             await _audioPlayer.play(AssetSource('sounds/single_beep.mp3'));
 
             ScaffoldMessenger.of(_context!).showSnackBar(
@@ -157,6 +148,9 @@ class WorkoutController extends ChangeNotifier {
   }
 
   void incrementReps() {
+    // Check if this is the first rep increment (workout hasn't started yet)
+    bool isFirstRep = (reps == 0 && series == 0 && sets == 0);
+    
     int newReps = reps + _maxReps;
 
     if (newReps >= reps + _maxReps) {
@@ -168,27 +162,38 @@ class WorkoutController extends ChangeNotifier {
     }
 
     reps = newReps;
+    
+    // Auto-start workout timer on first rep increment
+    if (isFirstRep && !isWorkoutRunning) {
+      startWorkoutTimer();
+    }
+    
     notifyListeners();
-}
+  }
 
   void decrementReps() {
     int newReps = reps - _maxReps;
 
     if (newReps < 0) return;
 
-    // Se stiamo per decrementare oltre l'inizio della serie corrente
     if (series > 0 || sets > 0) {
         if (series > 0) {
             series--;
         } else if (sets > 0) {
             sets--;
-            series = _maxSeries - 1;  // Torna all'ultima serie del set precedente
+            series = _maxSeries - 1;  
         }
     }
 
     reps = newReps;
+    
+    // If we're back to 0 reps and no sets/series, stop the workout timer
+    if (reps == 0 && series == 0 && sets == 0 && isWorkoutRunning) {
+      pauseWorkoutTimer();
+    }
+    
     notifyListeners();
-}
+  }
 
   void incrementSeries() {
     if (series < _maxSeries) {
@@ -204,15 +209,11 @@ class WorkoutController extends ChangeNotifier {
   void incrementSets() {
     if (sets < _maxSets) {
       sets++;
-      // if (sets == _maxSets) {
-      //   stopWorkout();
-      // }
       notifyListeners();
     }
   }
 
   void stopWorkout() async {
-    // Aggiungiamo async
     workoutTimer?.cancel();
     pauseTimer?.cancel();
 
@@ -250,6 +251,9 @@ class WorkoutController extends ChangeNotifier {
           );
 
           return const AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+            ),
             title: Text('Allenamento Terminato'),
             content: Text('Allenamento interrotto e dati resettati.'),
           );
