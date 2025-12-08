@@ -12,6 +12,16 @@ class HistoryViewModel extends ChangeNotifier {
   Map<DateTime, int> _heatmapDatasets = {};
   Map<DateTime, int> get heatmapDatasets => _heatmapDatasets;
 
+  int get totalWorkouts => _sessions.length;
+  
+  int get totalDurationSeconds {
+    return _sessions.fold(0, (sum, session) => sum + session.durationSeconds);
+  }
+
+  int get totalReps {
+    return _sessions.fold(0, (sum, session) => sum + session.totalReps);
+  }
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
