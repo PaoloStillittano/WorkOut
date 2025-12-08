@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
+
 import 'package:uuid/uuid.dart';
 import '../../history/data/repositories/history_repository.dart';
 import '../../history/data/models/workout_session.dart';
@@ -96,8 +96,7 @@ class WorkoutViewModel extends ChangeNotifier {
   void startWorkoutTimer() {
     if (_workoutTimer != null && _workoutTimer!.isActive) return;
 
-    // Enable wakelock when workout starts
-    WakelockPlus.enable();
+
 
     _workoutTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _workoutSeconds++;
@@ -119,8 +118,7 @@ class WorkoutViewModel extends ChangeNotifier {
     if (_pauseTimer != null && _pauseTimer!.isActive) return;
     if (_isPauseRunning) return;
 
-    // Ensure wakelock is enabled during rest pause too (should already be on if workout started)
-    WakelockPlus.enable();
+
 
     // Reset pause seconds from config
     SharedPreferences.getInstance().then((prefs) {
@@ -245,8 +243,7 @@ class WorkoutViewModel extends ChangeNotifier {
     _series = 0;
     _reps = 0;
 
-    // Disable wakelock when workout is stopped
-    WakelockPlus.disable();
+
 
     notifyListeners();
     
@@ -268,7 +265,7 @@ class WorkoutViewModel extends ChangeNotifier {
     _workoutTimer?.cancel();
     _pauseTimer?.cancel();
     _clockTimer?.cancel();
-    WakelockPlus.disable(); // Ensure it's disabled on dispose
+
     super.dispose();
   }
 }
