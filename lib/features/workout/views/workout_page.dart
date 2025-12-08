@@ -117,6 +117,32 @@ class _WorkoutPageState extends State<WorkoutPage> {
 
                       const SizedBox(height: 15),
 
+                      // Workout Type Selector
+                      SegmentedButton<String>(
+                        segments: const [
+                          ButtonSegment(
+                            value: 'Push', 
+                            label: Text('Push'), 
+                            icon: Icon(Icons.arrow_upward)
+                          ),
+                          ButtonSegment(
+                            value: 'Pull', 
+                            label: Text('Pull'), 
+                            icon: Icon(Icons.arrow_downward)
+                          ),
+                        ],
+                        selected: {viewModel.workoutType},
+                        onSelectionChanged: (Set<String> newSelection) {
+                          viewModel.setWorkoutType(newSelection.first);
+                        },
+                        style: ButtonStyle(
+                          visualDensity: VisualDensity.compact,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                      ),
+
+                      const SizedBox(height: 15),
+
                       // Timer di workout e pausa
                       WorkoutTimers(
                         workoutSeconds: viewModel.workoutSeconds,

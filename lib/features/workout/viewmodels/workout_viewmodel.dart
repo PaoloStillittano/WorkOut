@@ -4,6 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:uuid/uuid.dart';
+import '../../history/data/repositories/history_repository.dart';
+import '../../history/data/models/workout_session.dart';
 import '../../../core/constants/app_constants.dart';
 
 class WorkoutViewModel extends ChangeNotifier {
@@ -36,6 +39,14 @@ class WorkoutViewModel extends ChangeNotifier {
   String get currentTime => _currentTime;
   int get workoutSeconds => _workoutSeconds;
   int get pauseSeconds => _pauseSeconds;
+
+  String _workoutType = 'Push';
+  String get workoutType => _workoutType;
+
+  void setWorkoutType(String type) {
+    _workoutType = type;
+    notifyListeners();
+  }
 
   Timer? _workoutTimer;
   Timer? _pauseTimer;
@@ -202,12 +213,28 @@ class WorkoutViewModel extends ChangeNotifier {
     }
   }
 
+  final HistoryRepository _historyRepository = HistoryRepository();
+
   void stopWorkout() async {
     _workoutTimer?.cancel();
     _pauseTimer?.cancel();
 
     _isWorkoutRunning = false;
     _isPauseRunning = false;
+
+    // Save session if there was any activity
+    if (_workoutSeconds > 0 || _reps > 0) {
+      final session = WorkoutSession(
+        id: const Uuid().v4(),
+        date: DateTime.now(),
+        workoutType: _workoutType,
+        durationSeconds: _workoutSeconds,
+        totalSets: _sets,
+        totalSeries: _series,
+        totalReps: _reps,
+      );
+      await _historyRepository.saveSession(session);
+    }
 
     _workoutSeconds = 0;
     
