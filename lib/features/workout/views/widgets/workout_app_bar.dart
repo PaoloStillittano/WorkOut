@@ -1,8 +1,8 @@
-// lib/widgets/pp_bar.dart
+// lib/features/workout/views/widgets/workout_app_bar.dart
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../controllers/theme_controller.dart';
+import '../../../../core/theme/theme_provider.dart';
 
 class WorkoutAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback onSettingsPressed;
@@ -21,17 +21,6 @@ class WorkoutAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       title: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              colorScheme.primary.withAlpha(30),
-              colorScheme.secondary.withAlpha(20),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(10),
-        ),
         child: RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
@@ -74,24 +63,20 @@ class WorkoutAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
       actions: [
         // Pulsante per il tema
-        Consumer<ThemeController>(
-          builder: (context, themeController, child) => Container(
+        Consumer<ThemeProvider>(
+          builder: (context, themeProvider, child) => Container(
             margin: const EdgeInsets.only(right: 8),
-            decoration: BoxDecoration(
-              color: colorScheme.primary.withAlpha(20),
-              borderRadius: BorderRadius.circular(12),
-            ),
             child: IconButton(
               icon: Icon(
-                themeController.themeMode == ThemeMode.dark ? Icons.light_mode : Icons.dark_mode,
+                themeProvider.themeMode == ThemeMode.dark ? Icons.light_mode : Icons.dark_mode,
                 color: colorScheme.primary,
               ),
               onPressed: () {
-                themeController.setThemeMode(
-                  themeController.themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark,
+                themeProvider.setThemeMode(
+                  themeProvider.themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark,
                 );
               },
-              tooltip: themeController.themeMode == ThemeMode.dark
+              tooltip: themeProvider.themeMode == ThemeMode.dark
                   ? 'Passa al tema chiaro'
                   : 'Passa al tema scuro',
             ),
@@ -100,10 +85,6 @@ class WorkoutAppBar extends StatelessWidget implements PreferredSizeWidget {
         // Pulsante delle impostazioni
         Container(
           margin: const EdgeInsets.only(right: 16),
-          decoration: BoxDecoration(
-            color: colorScheme.secondary.withAlpha(20),
-            borderRadius: BorderRadius.circular(12),
-          ),
           child: IconButton(
             icon: Icon(
               Icons.settings,

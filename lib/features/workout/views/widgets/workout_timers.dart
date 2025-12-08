@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utils/time_formatter.dart';
+import '../../../../core/utils/time_formatter.dart';
 
 class WorkoutTimers extends StatelessWidget {
   final int workoutSeconds;
