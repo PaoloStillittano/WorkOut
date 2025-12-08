@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Aggiungi questo import
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'screens/workout_page.dart';
-import 'controllers/theme_controller.dart';
+import 'features/workout/views/workout_page.dart';
+import 'core/theme/theme_provider.dart';
+import 'core/theme/app_theme.dart';
+import 'features/settings/viewmodels/settings_viewmodel.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,11 +15,15 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   
-  final themeController = ThemeController();
-  await themeController.loadThemePreference();
+  final themeProvider = ThemeProvider();
+  await themeProvider.loadThemePreference();
+  
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => themeController,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => themeProvider),
+        ChangeNotifierProvider(create: (_) => SettingsViewModel()),
+      ],
       child: const MyApp(),
     ),
   );
@@ -28,36 +34,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeController>(
-      builder: (context, themeController, child) {
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
         return MaterialApp(
           title: 'Workout Timer',
-          themeMode: themeController.themeMode,
-          theme: ThemeData(
-            fontFamily: 'BebasNeue',
-            colorScheme: ColorScheme.light(
-              primary: Colors.blue,
-              secondary: Colors.blue.withAlpha(200),
-              surface: Colors.white,
-            ),
-            cardColor: Colors.white,
-            scaffoldBackgroundColor: Colors.white,
-            useMaterial3: true,
-            brightness: Brightness.light,
-          ),
-          darkTheme: ThemeData(
-            fontFamily: 'BebasNeue',
-            colorScheme: ColorScheme.dark(
-              primary: Colors.blue,
-              secondary: Colors.blue.withAlpha(200),
-              surface: Colors.grey[900]!,
-            ),
-            cardColor: Colors.grey[850],
-            scaffoldBackgroundColor: Colors.grey[1200],
-            useMaterial3: true,
-            brightness: Brightness.dark,
-          ),
+          themeMode: themeProvider.themeMode,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
           home: const WorkoutPage(),
+          debugShowCheckedModeBanner: false,
         );
       },
     );
