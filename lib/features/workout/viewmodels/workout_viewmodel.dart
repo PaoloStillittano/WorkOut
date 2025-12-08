@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../../core/constants/app_constants.dart';
 
 class WorkoutViewModel extends ChangeNotifier {
@@ -76,14 +77,6 @@ class WorkoutViewModel extends ChangeNotifier {
   }
 
   void _updateTime() {
-    final now = TimeOfDay.now();
-    // We can't format without context here easily if we want localized format, 
-    // but for now we'll just store the TimeOfDay or a string. 
-    // Actually, TimeOfDay.format needs context for 24h/12h preference.
-    // We'll expose TimeOfDay and let the View format it, or use a fixed format.
-    // Let's use a simple string for now, or better, expose DateTime/TimeOfDay.
-    // The original code used TimeOfDay.now().format(context).
-    // To keep it clean, we'll expose TimeOfDay and let the UI handle formatting.
     notifyListeners();
   }
   
@@ -91,6 +84,9 @@ class WorkoutViewModel extends ChangeNotifier {
 
   void startWorkoutTimer() {
     if (_workoutTimer != null && _workoutTimer!.isActive) return;
+
+    // Enable wakelock when workout starts
+    WakelockPlus.enable();
 
     _workoutTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _workoutSeconds++;
@@ -103,12 +99,17 @@ class WorkoutViewModel extends ChangeNotifier {
   void pauseWorkoutTimer() {
     _workoutTimer?.cancel();
     _isWorkoutRunning = false;
+    // We do NOT disable wakelock here because the user might just be taking a break
+    // but still wants the screen on. We only disable it when they explicitly STOP the workout.
     notifyListeners();
   }
 
   void startPauseTimer() {
     if (_pauseTimer != null && _pauseTimer!.isActive) return;
     if (_isPauseRunning) return;
+
+    // Ensure wakelock is enabled during rest pause too (should already be on if workout started)
+    WakelockPlus.enable();
 
     // Reset pause seconds from config
     SharedPreferences.getInstance().then((prefs) {
@@ -217,6 +218,9 @@ class WorkoutViewModel extends ChangeNotifier {
     _series = 0;
     _reps = 0;
 
+    // Disable wakelock when workout is stopped
+    WakelockPlus.disable();
+
     notifyListeners();
     
     _playBeep();
@@ -237,6 +241,7 @@ class WorkoutViewModel extends ChangeNotifier {
     _workoutTimer?.cancel();
     _pauseTimer?.cancel();
     _clockTimer?.cancel();
+    WakelockPlus.disable(); // Ensure it's disabled on dispose
     super.dispose();
   }
 }
