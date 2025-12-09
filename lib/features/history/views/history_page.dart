@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
 import '../../history/viewmodels/history_viewmodel.dart';
 import 'package:intl/intl.dart';
 import 'widgets/history_summary.dart';
 import 'widgets/workout_history_item.dart';
+import 'widgets/workout_heatmap.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -71,15 +71,10 @@ class _HistoryPageState extends State<HistoryPage> {
                       ),
                     ],
                   ),
-                  child: HeatMap(
+                  child: WorkoutHeatmap(
                     datasets: viewModel.heatmapDatasets,
-                    colorMode: ColorMode.opacity,
-                    showText: false,
-                    scrollable: true,
-                    colorsets: {
-                      1: colorScheme.primary,
-                    },
-                    onClick: (value) {
+                    primaryColor: colorScheme.primary,
+                    onTap: (value) {
                       final workoutsOnDate = viewModel.sessions
                           .where((s) => 
                             s.date.year == value.year &&
@@ -87,13 +82,15 @@ class _HistoryPageState extends State<HistoryPage> {
                             s.date.day == value.day)
                           .length;
                       
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            '${DateFormat.yMMMd().format(value)}: $workoutsOnDate workout${workoutsOnDate != 1 ? 's' : ''}',
+                      if (workoutsOnDate > 0) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              '${DateFormat.yMMMd().format(value)}: $workoutsOnDate workout${workoutsOnDate != 1 ? 's' : ''}',
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      }
                     },
                   ),
                 ),
