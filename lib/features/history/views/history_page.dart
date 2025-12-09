@@ -6,8 +6,15 @@ import 'package:intl/intl.dart';
 import 'widgets/history_summary.dart';
 import 'widgets/workout_history_item.dart';
 
-class HistoryPage extends StatelessWidget {
+class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
+
+  @override
+  State<HistoryPage> createState() => _HistoryPageState();
+}
+
+class _HistoryPageState extends State<HistoryPage> {
+  String _selectedFilter = 'All';
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +32,11 @@ class HistoryPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
+          // Filter sessions based on selected filter
+          final filteredSessions = _selectedFilter == 'All'
+              ? viewModel.sessions
+              : viewModel.sessions.where((s) => s.workoutType == _selectedFilter).toList();
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -35,6 +47,7 @@ class HistoryPage extends StatelessWidget {
                   totalWorkouts: viewModel.totalWorkouts,
                   totalDurationSeconds: viewModel.totalDurationSeconds,
                   totalReps: viewModel.totalReps,
+                  currentStreak: viewModel.currentStreak,
                 ),
                 
                 const SizedBox(height: 24),
@@ -67,8 +80,19 @@ class HistoryPage extends StatelessWidget {
                       1: colorScheme.primary,
                     },
                     onClick: (value) {
+                      final workoutsOnDate = viewModel.sessions
+                          .where((s) => 
+                            s.date.year == value.year &&
+                            s.date.month == value.month &&
+                            s.date.day == value.day)
+                          .length;
+                      
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(DateFormat.yMMMd().format(value))),
+                        SnackBar(
+                          content: Text(
+                            '${DateFormat.yMMMd().format(value)}: $workoutsOnDate workout${workoutsOnDate != 1 ? 's' : ''}',
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -76,11 +100,28 @@ class HistoryPage extends StatelessWidget {
 
                 const SizedBox(height: 24),
 
-                // Recent Activity Section
-                _buildSectionHeader(context, 'Recent Activity'),
+                // Recent Activity Section with Filter
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildSectionHeader(context, 'Recent Activity'),
+                  ],
+                ),
                 const SizedBox(height: 12),
 
-                if (viewModel.sessions.isEmpty)
+                // Filter Chips
+                Row(
+                  children: [
+                    _buildFilterChip('All', colorScheme),
+                    const SizedBox(width: 8),
+                    _buildFilterChip('Push', colorScheme),
+                    const SizedBox(width: 8),
+                    _buildFilterChip('Pull', colorScheme),
+                  ],
+                ),
+                const SizedBox(height: 12),
+
+                if (filteredSessions.isEmpty)
                   Center(
                     child: Padding(
                       padding: const EdgeInsets.all(32.0),
@@ -93,12 +134,15 @@ class HistoryPage extends StatelessWidget {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'No workouts yet',
+                            _selectedFilter == 'All' 
+                                ? 'No workouts yet'
+                                : 'No $_selectedFilter workouts',
                             style: TextStyle(
                               fontSize: 16,
                               color: colorScheme.onSurfaceVariant,
                             ),
                           ),
+                          const SizedBox(height: 8),
                           Text(
                             'Start training to see your history!',
                             style: TextStyle(
@@ -106,6 +150,14 @@ class HistoryPage extends StatelessWidget {
                               color: colorScheme.onSurfaceVariant.withAlpha(200),
                             ),
                           ),
+                          if (_selectedFilter == 'All') ...[
+                            const SizedBox(height: 16),
+                            FilledButton.icon(
+                              onPressed: () => Navigator.pop(context),
+                              icon: const Icon(Icons.fitness_center),
+                              label: const Text('Start Workout'),
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -114,14 +166,13 @@ class HistoryPage extends StatelessWidget {
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: viewModel.sessions.length,
+                    itemCount: filteredSessions.length,
                     itemBuilder: (context, index) {
-                      // Reverse index to show newest first if the list is chronological
-                      // Assuming viewModel.sessions is already sorted newest first?
-                      // If not, we should sort it in the viewmodel. 
-                      // Let's assume the viewmodel provides them in the correct order for now.
-                      final session = viewModel.sessions[index];
-                      return WorkoutHistoryItem(session: session);
+                      final session = filteredSessions[index];
+                      return WorkoutHistoryItem(
+                        session: session,
+                        onDelete: (id) => viewModel.deleteSession(id),
+                      );
                     },
                   ),
               ],
@@ -138,6 +189,25 @@ class HistoryPage extends StatelessWidget {
       style: const TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(String label, ColorScheme colorScheme) {
+    final isSelected = _selectedFilter == label;
+    return FilterChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (selected) {
+        setState(() {
+          _selectedFilter = label;
+        });
+      },
+      backgroundColor: colorScheme.surface,
+      selectedColor: colorScheme.primaryContainer,
+      checkmarkColor: colorScheme.onPrimaryContainer,
+      labelStyle: TextStyle(
+        color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurface,
       ),
     );
   }

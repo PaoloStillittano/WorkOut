@@ -1,48 +1,57 @@
 import 'package:flutter/material.dart';
-import 'package:workout/core/utils/time_formatter.dart';
 
 class HistorySummary extends StatelessWidget {
   final int totalWorkouts;
   final int totalDurationSeconds;
   final int totalReps;
+  final int currentStreak;
 
   const HistorySummary({
     super.key,
     required this.totalWorkouts,
     required this.totalDurationSeconds,
     required this.totalReps,
+    required this.currentStreak,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: _SummaryCard(
-            title: 'Workouts',
-            value: totalWorkouts.toString(),
-            icon: Icons.fitness_center,
-            color: Colors.blue,
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: _SummaryCard(
+                title: 'Workouts',
+                value: totalWorkouts.toString(),
+                icon: Icons.fitness_center,
+                color: Colors.blue,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _SummaryCard(
+                title: 'Time',
+                value: _formatDuration(totalDurationSeconds),
+                icon: Icons.timer,
+                color: Colors.orange,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _SummaryCard(
+                title: 'Reps',
+                value: _formatReps(totalReps),
+                icon: Icons.repeat,
+                color: Colors.green,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _SummaryCard(
-            title: 'Time',
-            value: _formatDuration(totalDurationSeconds),
-            icon: Icons.timer,
-            color: Colors.orange,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _SummaryCard(
-            title: 'Reps',
-            value: _formatReps(totalReps),
-            icon: Icons.repeat,
-            color: Colors.green,
-          ),
-        ),
+        if (currentStreak > 0) ...[
+          const SizedBox(height: 12),
+          _StreakBanner(streak: currentStreak),
+        ],
       ],
     );
   }
@@ -132,3 +141,57 @@ class _SummaryCard extends StatelessWidget {
     );
   }
 }
+
+class _StreakBanner extends StatelessWidget {
+  final int streak;
+
+  const _StreakBanner({required this.streak});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.orange.withAlpha(50),
+            Colors.deepOrange.withAlpha(50),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.orange.withAlpha(100),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            '🔥',
+            style: TextStyle(fontSize: 24),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            '$streak day streak!',
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'Keep it up!',
+            style: TextStyle(
+              fontSize: 14,
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+

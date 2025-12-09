@@ -22,6 +22,31 @@ class HistoryViewModel extends ChangeNotifier {
     return _sessions.fold(0, (sum, session) => sum + session.totalReps);
   }
 
+  int get currentStreak {
+    if (_sessions.isEmpty) return 0;
+    
+    int streak = 0;
+    final today = DateTime.now();
+    final normalizedToday = DateTime(today.year, today.month, today.day);
+    
+    for (int i = 0; i < 365; i++) {
+      final checkDate = normalizedToday.subtract(Duration(days: i));
+      final hasWorkout = _sessions.any((session) {
+        final sessionDate = DateTime(session.date.year, session.date.month, session.date.day);
+        return sessionDate.isAtSameMomentAs(checkDate);
+      });
+      
+      if (hasWorkout) {
+        streak++;
+      } else if (i > 0) {
+        // Only break if it's not today (allow for no workout today)
+        break;
+      }
+    }
+    
+    return streak;
+  }
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
