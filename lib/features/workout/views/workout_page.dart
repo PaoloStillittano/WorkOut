@@ -8,6 +8,7 @@ import 'widgets/counter_display.dart';
 import 'widgets/workout_timers.dart';
 import 'widgets/workout_app_bar.dart';
 import '../../../core/constants/app_constants.dart';
+import 'widgets/workout_type_selector.dart';
 
 class WorkoutPage extends StatefulWidget {
   const WorkoutPage({super.key});
@@ -118,30 +119,12 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       const SizedBox(height: 15),
 
                       // Workout Type Selector
-                      SegmentedButton<String>(
-                        segments: const [
-                          ButtonSegment(
-                            value: 'Push', 
-                            label: Text('Push'), 
-                            icon: Icon(Icons.arrow_upward)
-                          ),
-                          ButtonSegment(
-                            value: 'Pull', 
-                            label: Text('Pull'), 
-                            icon: Icon(Icons.arrow_downward)
-                          ),
-                        ],
-                        selected: {viewModel.workoutType},
-                        onSelectionChanged: (Set<String> newSelection) {
-                          viewModel.setWorkoutType(newSelection.first);
-                        },
-                        style: ButtonStyle(
-                          visualDensity: VisualDensity.compact,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
+                      WorkoutTypeSelector(
+                        selectedType: viewModel.workoutType,
+                        onTypeChanged: viewModel.setWorkoutType,
                       ),
 
-                      const SizedBox(height: 15),
+                      const SizedBox(height: 10),
 
                       // Timer di workout e pausa
                       WorkoutTimers(
