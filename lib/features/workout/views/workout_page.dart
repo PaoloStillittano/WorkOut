@@ -9,9 +9,12 @@ import 'widgets/workout_timers.dart';
 import 'widgets/workout_app_bar.dart';
 import '../../../core/constants/app_constants.dart';
 import 'widgets/workout_type_selector.dart';
+import '../../history/views/history_page.dart';
 
 class WorkoutPage extends StatefulWidget {
-  const WorkoutPage({super.key});
+  final bool showAppBar;
+  
+  const WorkoutPage({super.key, this.showAppBar = false});
 
   @override
   State<WorkoutPage> createState() => _WorkoutPageState();
@@ -90,9 +93,54 @@ class _WorkoutPageState extends State<WorkoutPage> {
 
           return Scaffold(
             backgroundColor: colorScheme.background,
-            appBar: WorkoutAppBar(
-              onSettingsPressed: _navigateToConfig,
-            ),
+            appBar: widget.showAppBar 
+              ? AppBar(
+                  title: const Text('Workout'),
+                  centerTitle: true,
+                  scrolledUnderElevation: 0,
+                  actions: [
+                    PopupMenuButton<String>(
+                      icon: const Icon(Icons.menu),
+                      onSelected: (value) {
+                        if (value == 'settings') {
+                          _navigateToConfig();
+                        } else if (value == 'history') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const HistoryPage(),
+                            ),
+                          );
+                        }
+                      },
+                      itemBuilder: (BuildContext context) => [
+                        const PopupMenuItem<String>(
+                          value: 'settings',
+                          child: Row(
+                            children: [
+                              Icon(Icons.settings_outlined),
+                              SizedBox(width: 12),
+                              Text('Settings'),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem<String>(
+                          value: 'history',
+                          child: Row(
+                            children: [
+                              Icon(Icons.history_outlined),
+                              SizedBox(width: 12),
+                              Text('History'),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              : WorkoutAppBar(
+                  onSettingsPressed: _navigateToConfig,
+                ),
             body: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
