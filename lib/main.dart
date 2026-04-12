@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'features/workout/views/workout_page.dart';
 import 'core/theme/theme_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'features/settings/viewmodels/settings_viewmodel.dart';
@@ -12,20 +11,20 @@ import 'main_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize Hive
   await Hive.initFlutter();
   Hive.registerAdapter(WorkoutSessionAdapter());
-  
+
   // Blocca l'orientamento solo in verticale
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  
+
   final themeProvider = ThemeProvider();
   await themeProvider.loadThemePreference();
-  
+
   runApp(
     MultiProvider(
       providers: [

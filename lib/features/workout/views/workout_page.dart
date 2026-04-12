@@ -13,7 +13,7 @@ import '../../history/views/history_page.dart';
 
 class WorkoutPage extends StatefulWidget {
   final bool showAppBar;
-  
+
   const WorkoutPage({super.key, this.showAppBar = false});
 
   @override
@@ -27,7 +27,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
   void initState() {
     super.initState();
     _viewModel = WorkoutViewModel();
-    
+
     // Setup callbacks
     _viewModel.onPauseFinished = () {
       if (mounted) {
@@ -92,62 +92,62 @@ class _WorkoutPageState extends State<WorkoutPage> {
           final colorScheme = Theme.of(context).colorScheme;
 
           return Scaffold(
-            backgroundColor: colorScheme.background,
-            appBar: widget.showAppBar 
-              ? AppBar(
-                  title: const Text('Workout'),
-                  centerTitle: true,
-                  scrolledUnderElevation: 0,
-                  actions: [
-                    PopupMenuButton<String>(
-                      icon: const Icon(Icons.menu),
-                      onSelected: (value) {
-                        if (value == 'settings') {
-                          _navigateToConfig();
-                        } else if (value == 'history') {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const HistoryPage(),
+            backgroundColor: colorScheme.surface,
+            appBar: widget.showAppBar
+                ? AppBar(
+                    title: const Text('Workout'),
+                    centerTitle: true,
+                    scrolledUnderElevation: 0,
+                    actions: [
+                      PopupMenuButton<String>(
+                        icon: const Icon(Icons.menu),
+                        onSelected: (value) {
+                          if (value == 'settings') {
+                            _navigateToConfig();
+                          } else if (value == 'history') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const HistoryPage(),
+                              ),
+                            );
+                          }
+                        },
+                        itemBuilder: (BuildContext context) => [
+                          const PopupMenuItem<String>(
+                            value: 'settings',
+                            child: Row(
+                              children: [
+                                Icon(Icons.settings_outlined),
+                                SizedBox(width: 12),
+                                Text('Settings'),
+                              ],
                             ),
-                          );
-                        }
-                      },
-                      itemBuilder: (BuildContext context) => [
-                        const PopupMenuItem<String>(
-                          value: 'settings',
-                          child: Row(
-                            children: [
-                              Icon(Icons.settings_outlined),
-                              SizedBox(width: 12),
-                              Text('Settings'),
-                            ],
                           ),
-                        ),
-                        const PopupMenuItem<String>(
-                          value: 'history',
-                          child: Row(
-                            children: [
-                              Icon(Icons.history_outlined),
-                              SizedBox(width: 12),
-                              Text('History'),
-                            ],
+                          const PopupMenuItem<String>(
+                            value: 'history',
+                            child: Row(
+                              children: [
+                                Icon(Icons.history_outlined),
+                                SizedBox(width: 12),
+                                Text('History'),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                )
-              : WorkoutAppBar(
-                  onSettingsPressed: _navigateToConfig,
-                ),
+                        ],
+                      ),
+                    ],
+                  )
+                : WorkoutAppBar(
+                    onSettingsPressed: _navigateToConfig,
+                  ),
             body: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    colorScheme.background,
+                    colorScheme.surface,
                     colorScheme.surface.withAlpha(50),
                   ],
                 ),
@@ -160,9 +160,10 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       // Timer principale
                       // Note: We need to pass a formatted string or handle formatting in TimerDisplay
                       // For now, let's assume TimerDisplay expects a string.
-                      // We can format TimeOfDay here or in ViewModel. 
+                      // We can format TimeOfDay here or in ViewModel.
                       // ViewModel exposes TimeOfDay, let's format it here.
-                      TimerDisplay(currentTime: viewModel.timeOfDay.format(context)),
+                      TimerDisplay(
+                          currentTime: viewModel.timeOfDay.format(context)),
 
                       const SizedBox(height: 15),
 

@@ -16,15 +16,16 @@ class WorkoutHeatmap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     // Get last 12 weeks of data
     final today = DateTime.now();
     final weeks = <List<DateTime>>[];
-    
+
     for (int weekIndex = 11; weekIndex >= 0; weekIndex--) {
       final week = <DateTime>[];
       for (int dayIndex = 0; dayIndex < 7; dayIndex++) {
-        final date = today.subtract(Duration(days: weekIndex * 7 + (6 - dayIndex)));
+        final date =
+            today.subtract(Duration(days: weekIndex * 7 + (6 - dayIndex)));
         week.add(DateTime(date.year, date.month, date.day));
       }
       weeks.add(week);
@@ -55,7 +56,7 @@ class WorkoutHeatmap extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        
+
         // Heatmap grid
         SizedBox(
           height: 300,
@@ -64,7 +65,7 @@ class WorkoutHeatmap extends StatelessWidget {
             itemBuilder: (context, weekIndex) {
               final week = weeks[weekIndex];
               final weekStart = week.first;
-              
+
               return Padding(
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Row(
@@ -81,7 +82,7 @@ class WorkoutHeatmap extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 4),
-                    
+
                     // Day cells
                     Expanded(
                       child: Row(
@@ -89,7 +90,7 @@ class WorkoutHeatmap extends StatelessWidget {
                         children: week.map((date) {
                           final intensity = datasets[date] ?? 0;
                           final hasWorkout = intensity > 0;
-                          
+
                           return GestureDetector(
                             onTap: () => onTap?.call(date),
                             child: Container(
@@ -97,11 +98,14 @@ class WorkoutHeatmap extends StatelessWidget {
                               height: 28,
                               decoration: BoxDecoration(
                                 color: hasWorkout
-                                    ? primaryColor.withOpacity(_getOpacity(intensity))
-                                    : colorScheme.surfaceVariant.withAlpha(100),
+                                    ? primaryColor
+                                        .withOpacity(_getOpacity(intensity))
+                                    : colorScheme.surfaceContainerHighest
+                                        .withAlpha(100),
                                 borderRadius: BorderRadius.circular(4),
                                 border: Border.all(
-                                  color: colorScheme.outlineVariant.withAlpha(50),
+                                  color:
+                                      colorScheme.outlineVariant.withAlpha(50),
                                   width: 1,
                                 ),
                               ),
@@ -116,9 +120,9 @@ class WorkoutHeatmap extends StatelessWidget {
             },
           ),
         ),
-        
+
         const SizedBox(height: 12),
-        
+
         // Legend
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -139,7 +143,7 @@ class WorkoutHeatmap extends StatelessWidget {
                   height: 16,
                   decoration: BoxDecoration(
                     color: index == 0
-                        ? colorScheme.surfaceVariant.withAlpha(100)
+                        ? colorScheme.surfaceContainerHighest.withAlpha(100)
                         : primaryColor.withOpacity(0.2 + (index * 0.2)),
                     borderRadius: BorderRadius.circular(2),
                     border: Border.all(

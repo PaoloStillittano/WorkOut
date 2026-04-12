@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,7 +9,7 @@ import '../../history/data/models/workout_session.dart';
 import '../../../core/constants/app_constants.dart';
 
 class WorkoutViewModel extends ChangeNotifier {
-  String _currentTime = "";
+  final String _currentTime = "";
   int _workoutSeconds = 0;
   int _pauseSeconds = 90;
 
@@ -53,7 +52,7 @@ class WorkoutViewModel extends ChangeNotifier {
   Timer? _clockTimer;
 
   final AudioPlayer _audioPlayer = AudioPlayer();
-  
+
   // Events
   Function()? onPauseFinished;
   Function()? onWorkoutStopped;
@@ -72,7 +71,7 @@ class WorkoutViewModel extends ChangeNotifier {
     _maxSets = prefs.getInt(AppConstants.keyTotalSets) ?? 5;
     _maxSeries = prefs.getInt(AppConstants.keySeriesPerSet) ?? 4;
     _maxReps = prefs.getInt(AppConstants.keyRepsPerSeries) ?? 10;
-    
+
     if (!_isPauseRunning) {
       _pauseSeconds = prefs.getInt(AppConstants.keyRestTime) ?? 90;
     }
@@ -90,13 +89,11 @@ class WorkoutViewModel extends ChangeNotifier {
   void _updateTime() {
     notifyListeners();
   }
-  
+
   TimeOfDay get timeOfDay => TimeOfDay.now();
 
   void startWorkoutTimer() {
     if (_workoutTimer != null && _workoutTimer!.isActive) return;
-
-
 
     _workoutTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _workoutSeconds++;
@@ -118,24 +115,22 @@ class WorkoutViewModel extends ChangeNotifier {
     if (_pauseTimer != null && _pauseTimer!.isActive) return;
     if (_isPauseRunning) return;
 
-
-
     // Reset pause seconds from config
     SharedPreferences.getInstance().then((prefs) {
-        _pauseSeconds = prefs.getInt(AppConstants.keyRestTime) ?? 90;
-        _isPauseRunning = true;
-        notifyListeners();
+      _pauseSeconds = prefs.getInt(AppConstants.keyRestTime) ?? 90;
+      _isPauseRunning = true;
+      notifyListeners();
 
-        _pauseTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
-          if (_pauseSeconds > 0) {
-            _pauseSeconds--;
-            notifyListeners();
-          } else {
-            stopPauseTimer();
-            _playBeep();
-            onPauseFinished?.call();
-          }
-        });
+      _pauseTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+        if (_pauseSeconds > 0) {
+          _pauseSeconds--;
+          notifyListeners();
+        } else {
+          stopPauseTimer();
+          _playBeep();
+          onPauseFinished?.call();
+        }
+      });
     });
   }
 
@@ -143,30 +138,30 @@ class WorkoutViewModel extends ChangeNotifier {
     _pauseTimer?.cancel();
     _isPauseRunning = false;
     SharedPreferences.getInstance().then((prefs) {
-        _pauseSeconds = prefs.getInt(AppConstants.keyRestTime) ?? 90;
-        notifyListeners();
+      _pauseSeconds = prefs.getInt(AppConstants.keyRestTime) ?? 90;
+      notifyListeners();
     });
   }
 
   void incrementReps() {
     bool isFirstRep = (_reps == 0 && _series == 0 && _sets == 0);
-    
+
     int newReps = _reps + _maxReps;
 
     if (newReps >= _reps + _maxReps) {
-        _series++;
-        if (_series >= _maxSeries) {
-            _series = 0;
-            _sets++;
-        }
+      _series++;
+      if (_series >= _maxSeries) {
+        _series = 0;
+        _sets++;
+      }
     }
 
     _reps = newReps;
-    
+
     if (isFirstRep && !_isWorkoutRunning) {
       startWorkoutTimer();
     }
-    
+
     notifyListeners();
   }
 
@@ -176,20 +171,20 @@ class WorkoutViewModel extends ChangeNotifier {
     if (newReps < 0) return;
 
     if (_series > 0 || _sets > 0) {
-        if (_series > 0) {
-            _series--;
-        } else if (_sets > 0) {
-            _sets--;
-            _series = _maxSeries - 1;  
-        }
+      if (_series > 0) {
+        _series--;
+      } else if (_sets > 0) {
+        _sets--;
+        _series = _maxSeries - 1;
+      }
     }
 
     _reps = newReps;
-    
+
     if (_reps == 0 && _series == 0 && _sets == 0 && _isWorkoutRunning) {
       pauseWorkoutTimer();
     }
-    
+
     notifyListeners();
   }
 
@@ -235,7 +230,7 @@ class WorkoutViewModel extends ChangeNotifier {
     }
 
     _workoutSeconds = 0;
-    
+
     final prefs = await SharedPreferences.getInstance();
     _pauseSeconds = prefs.getInt(AppConstants.keyRestTime) ?? 90;
 
@@ -243,10 +238,8 @@ class WorkoutViewModel extends ChangeNotifier {
     _series = 0;
     _reps = 0;
 
-
-
     notifyListeners();
-    
+
     _playBeep();
     onWorkoutStopped?.call();
   }
