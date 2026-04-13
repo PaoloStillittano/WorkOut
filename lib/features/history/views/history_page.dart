@@ -5,6 +5,9 @@ import 'package:intl/intl.dart';
 import 'widgets/history_summary.dart';
 import 'widgets/workout_history_item.dart';
 import 'widgets/workout_heatmap.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_typography.dart';
+import '../../../core/theme/app_dimensions.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -18,13 +21,13 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Workout History'),
-        centerTitle: true,
-        scrolledUnderElevation: 0,
+        title: const Text('Workout History', style: AppTypography.headlineMedium),
+        centerTitle: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: Consumer<HistoryViewModel>(
         builder: (context, viewModel, child) {
@@ -37,8 +40,11 @@ class _HistoryPageState extends State<HistoryPage> {
               ? viewModel.sessions
               : viewModel.sessions.where((s) => s.workoutType == _selectedFilter).toList();
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
+          return Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(AppDimensions.p16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -50,30 +56,20 @@ class _HistoryPageState extends State<HistoryPage> {
                   currentStreak: viewModel.currentStreak,
                 ),
                 
-                const SizedBox(height: 24),
+                const SizedBox(height: AppDimensions.p24),
 
                 // Heatmap Section
                 _buildSectionHeader(context, 'Consistency'),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppDimensions.p12),
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(AppDimensions.p16),
                   decoration: BoxDecoration(
-                    color: colorScheme.surface,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: colorScheme.outlineVariant.withAlpha(50),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: colorScheme.shadow.withAlpha(10),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+                    color: AppColors.cardBackground,
+                    borderRadius: BorderRadius.circular(AppDimensions.radius16),
                   ),
                   child: WorkoutHeatmap(
                     datasets: viewModel.heatmapDatasets,
-                    primaryColor: colorScheme.primary,
+                    primaryColor: AppColors.primaryBlue,
                     onTap: (value) {
                       final workoutsOnDate = viewModel.sessions
                           .where((s) => 
@@ -95,7 +91,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: AppDimensions.p24),
 
                 // Recent Activity Section with Filter
                 Row(
@@ -104,55 +100,52 @@ class _HistoryPageState extends State<HistoryPage> {
                     _buildSectionHeader(context, 'Recent Activity'),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppDimensions.p12),
 
                 // Filter Chips
                 Row(
                   children: [
-                    _buildFilterChip('All', colorScheme),
-                    const SizedBox(width: 8),
-                    _buildFilterChip('Push', colorScheme),
-                    const SizedBox(width: 8),
-                    _buildFilterChip('Pull', colorScheme),
+                    _buildFilterChip('All'),
+                    const SizedBox(width: AppDimensions.p8),
+                    _buildFilterChip('Push'),
+                    const SizedBox(width: AppDimensions.p8),
+                    _buildFilterChip('Pull'),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppDimensions.p16),
 
                 if (filteredSessions.isEmpty)
                   Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(32.0),
+                      padding: const EdgeInsets.all(AppDimensions.p32),
                       child: Column(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.fitness_center_outlined,
                             size: 48,
-                            color: colorScheme.outline,
+                            color: AppColors.textSecondary,
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: AppDimensions.p16),
                           Text(
                             _selectedFilter == 'All' 
                                 ? 'No workouts yet'
                                 : 'No $_selectedFilter workouts',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: colorScheme.onSurfaceVariant,
-                            ),
+                            style: AppTypography.titleMedium,
                           ),
-                          const SizedBox(height: 8),
-                          Text(
+                          const SizedBox(height: AppDimensions.p8),
+                          const Text(
                             'Start training to see your history!',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: colorScheme.onSurfaceVariant.withAlpha(200),
-                            ),
+                            style: AppTypography.labelLarge,
                           ),
                           if (_selectedFilter == 'All') ...[
-                            const SizedBox(height: 16),
+                            const SizedBox(height: AppDimensions.p16),
                             FilledButton.icon(
                               onPressed: () => Navigator.pop(context),
                               icon: const Icon(Icons.fitness_center),
                               label: const Text('Start Workout'),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: AppColors.primaryBlue,
+                              ),
                             ),
                           ],
                         ],
@@ -174,8 +167,10 @@ class _HistoryPageState extends State<HistoryPage> {
                   ),
               ],
             ),
-          );
-        },
+           ),
+          ),
+        );
+      },
       ),
     );
   }
@@ -183,14 +178,11 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget _buildSectionHeader(BuildContext context, String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-      ),
+      style: AppTypography.titleLarge,
     );
   }
 
-  Widget _buildFilterChip(String label, ColorScheme colorScheme) {
+  Widget _buildFilterChip(String label) {
     final isSelected = _selectedFilter == label;
     return FilterChip(
       label: Text(label),
@@ -200,12 +192,18 @@ class _HistoryPageState extends State<HistoryPage> {
           _selectedFilter = label;
         });
       },
-      backgroundColor: colorScheme.surface,
-      selectedColor: colorScheme.primaryContainer,
-      checkmarkColor: colorScheme.onPrimaryContainer,
+      backgroundColor: AppColors.cardBackground,
+      selectedColor: AppColors.primaryBlue.withAlpha(100),
+      checkmarkColor: AppColors.textPrimary,
       labelStyle: TextStyle(
-        color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurface,
+        color: AppColors.textPrimary,
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppDimensions.radius8),
+        side: BorderSide.none,
       ),
     );
   }
 }
+

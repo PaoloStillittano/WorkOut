@@ -10,7 +10,7 @@ import 'widgets/workout_app_bar.dart';
 import '../../../core/constants/app_constants.dart';
 import 'widgets/workout_type_selector.dart';
 import '../../history/views/history_page.dart';
-
+import '../../../core/theme/app_dimensions.dart';
 class WorkoutPage extends StatefulWidget {
   final bool showAppBar;
 
@@ -93,79 +93,32 @@ class _WorkoutPageState extends State<WorkoutPage> {
 
           return Scaffold(
             backgroundColor: colorScheme.surface,
-            appBar: widget.showAppBar
-                ? AppBar(
-                    title: const Text('Workout'),
-                    centerTitle: true,
-                    scrolledUnderElevation: 0,
-                    actions: [
-                      PopupMenuButton<String>(
-                        icon: const Icon(Icons.menu),
-                        onSelected: (value) {
-                          if (value == 'settings') {
-                            _navigateToConfig();
-                          } else if (value == 'history') {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const HistoryPage(),
-                              ),
-                            );
-                          }
-                        },
-                        itemBuilder: (BuildContext context) => [
-                          const PopupMenuItem<String>(
-                            value: 'settings',
-                            child: Row(
-                              children: [
-                                Icon(Icons.settings_outlined),
-                                SizedBox(width: 12),
-                                Text('Settings'),
-                              ],
-                            ),
-                          ),
-                          const PopupMenuItem<String>(
-                            value: 'history',
-                            child: Row(
-                              children: [
-                                Icon(Icons.history_outlined),
-                                SizedBox(width: 12),
-                                Text('History'),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                : WorkoutAppBar(
-                    onSettingsPressed: _navigateToConfig,
+            appBar: WorkoutAppBar(
+              onSettingsPressed: _navigateToConfig,
+              onHistoryPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HistoryPage(),
                   ),
+                );
+              },
+            ),
             body: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    colorScheme.surface,
-                    colorScheme.surface.withAlpha(50),
-                  ],
-                ),
-              ),
+              color: Theme.of(context).colorScheme.surface,
               child: SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 600),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(AppDimensions.p16),
                   child: Column(
                     children: [
                       // Timer principale
-                      // Note: We need to pass a formatted string or handle formatting in TimerDisplay
-                      // For now, let's assume TimerDisplay expects a string.
-                      // We can format TimeOfDay here or in ViewModel.
-                      // ViewModel exposes TimeOfDay, let's format it here.
                       TimerDisplay(
-                          currentTime: viewModel.timeOfDay.format(context)),
+                          currentDateTime: viewModel.currentDateTime),
 
-                      const SizedBox(height: 15),
+                      const SizedBox(height: AppDimensions.p16),
 
                       // Workout Type Selector
                       WorkoutTypeSelector(
@@ -173,7 +126,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                         onTypeChanged: viewModel.setWorkoutType,
                       ),
 
-                      const SizedBox(height: 10),
+                      const SizedBox(height: AppDimensions.p16),
 
                       // Timer di workout e pausa
                       WorkoutTimers(
@@ -184,7 +137,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                         onStopPause: viewModel.stopPauseTimer,
                       ),
 
-                      const SizedBox(height: 10),
+                      const SizedBox(height: AppDimensions.p16),
 
                       // Contatori (Set, Serie, Ripetizioni)
                       CounterDisplay(
@@ -198,7 +151,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                         onDecrementReps: viewModel.decrementReps,
                       ),
 
-                      const SizedBox(height: 6),
+                      const SizedBox(height: AppDimensions.p16),
 
                       // Controlli workout
                       WorkoutControls(
@@ -208,14 +161,16 @@ class _WorkoutPageState extends State<WorkoutPage> {
                         onStop: viewModel.stopWorkout,
                       ),
 
-                      const SizedBox(height: 5),
+                      const SizedBox(height: AppDimensions.p8),
                     ],
                   ),
                 ),
               ),
             ),
-          );
-        },
+          ),
+        ),
+      );
+    },
       ),
     );
   }

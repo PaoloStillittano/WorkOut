@@ -90,7 +90,7 @@ class WorkoutViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  TimeOfDay get timeOfDay => TimeOfDay.now();
+  DateTime get currentDateTime => DateTime.now();
 
   void startWorkoutTimer() {
     if (_workoutTimer != null && _workoutTimer!.isActive) return;

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../../core/utils/time_formatter.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_typography.dart';
+import '../../../../core/theme/app_dimensions.dart';
 
 class WorkoutTimers extends StatelessWidget {
   final int workoutSeconds;
@@ -19,107 +22,65 @@ class WorkoutTimers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = Theme.of(context).textTheme.bodyLarge?.color;
-
-    return IntrinsicHeight(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: Card(
-              elevation: 4,
-              margin: const EdgeInsets.all(6.0),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(
-                  color: Colors.white.withAlpha(40),
-                  width: 1,
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.cardBackground,
+              borderRadius: BorderRadius.circular(AppDimensions.radius16),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: AppDimensions.p32, horizontal: AppDimensions.p8),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Workout',
+                  style: AppTypography.labelLarge,
                 ),
+                const SizedBox(height: AppDimensions.p12),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    TimeFormatter.formatSeconds(workoutSeconds),
+                    style: AppTypography.displayTimer,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(width: AppDimensions.p16),
+        Expanded(
+          child: GestureDetector(
+            onTap: isPauseRunning ? onStopPause : onStartPause,
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.cardBackground,
+                borderRadius: BorderRadius.circular(AppDimensions.radius16),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Tempo Allenamento',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: textColor,
-                      ),
-                      textAlign: TextAlign.center,
+              padding: const EdgeInsets.symmetric(vertical: AppDimensions.p32, horizontal: AppDimensions.p8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Break',
+                    style: AppTypography.labelLarge,
+                  ),
+                  const SizedBox(height: AppDimensions.p12),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      TimeFormatter.formatSeconds(pauseSeconds),
+                      style: AppTypography.displayTimer,
                     ),
-                    const SizedBox(height: 8),
-                    Expanded(
-                      child: FittedBox(
-                        fit: BoxFit.contain,
-                        child: Text(
-                          TimeFormatter.formatSeconds(workoutSeconds),
-                          style: const TextStyle(
-                            fontSize: 35,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-          Expanded(
-            child: GestureDetector(
-              onTap: isPauseRunning ? onStopPause : onStartPause,
-              child: Card(
-                elevation: 4,
-                margin: const EdgeInsets.all(6.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(
-                    color: Colors.white.withAlpha(40),
-                    width: 1,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        isPauseRunning
-                            ? 'Pausa in corso'
-                            : 'Tap per iniziare pausa',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: textColor,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      Expanded(
-                        child: FittedBox(
-                          fit: BoxFit.contain,
-                          child: Text(
-                            TimeFormatter.formatSeconds(pauseSeconds),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 35,
-                              color: isPauseRunning
-                                  ? Theme.of(context).colorScheme.primary
-                                  : textColor,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

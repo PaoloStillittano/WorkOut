@@ -1,29 +1,48 @@
 import 'package:flutter/material.dart';
+import 'app_colors.dart';
+import 'app_typography.dart';
 
 class AppTheme {
   static final ThemeData lightTheme = ThemeData(
-    fontFamily: 'BebasNeue',
-    colorScheme: ColorScheme.light(
-      primary: Colors.blue,
-      secondary: Colors.blue.withAlpha(200),
-      surface: Colors.white,
+    colorScheme: const ColorScheme.light(
+      primary: AppColors.primaryBlue,
+      secondary: AppColors.primaryBlue,
+      surface: AppColors.background,
     ),
-    cardColor: Colors.white,
-    scaffoldBackgroundColor: Colors.white,
+    cardColor: AppColors.cardBackgroundLight,
+    scaffoldBackgroundColor: AppColors.background,
     useMaterial3: true,
     brightness: Brightness.light,
+    textTheme: const TextTheme(
+      displayLarge: AppTypography.displayLarge,
+      displayMedium: AppTypography.displayMedium,
+      headlineMedium: AppTypography.headlineMedium,
+      titleLarge: AppTypography.titleLarge,
+      titleMedium: AppTypography.titleMedium,
+      bodyLarge: AppTypography.bodyLarge,
+      labelMedium: AppTypography.labelMedium,
+    ),
   );
 
   static final ThemeData darkTheme = ThemeData(
-    fontFamily: 'BebasNeue',
-    colorScheme: ColorScheme.dark(
-      primary: Colors.blue,
-      secondary: Colors.blue.withAlpha(200),
-      surface: Colors.grey[900]!,
+    colorScheme: const ColorScheme.dark(
+      primary: AppColors.primaryBlue,
+      secondary: AppColors.primaryBlue,
+      surface: AppColors.background,
+      error: AppColors.stopRed,
     ),
-    cardColor: Colors.grey[850],
-    scaffoldBackgroundColor: Colors.grey[1200], // Note: 1200 doesn't exist, using black or very dark grey
+    cardColor: AppColors.cardBackground,
+    scaffoldBackgroundColor: AppColors.background,
     useMaterial3: true,
     brightness: Brightness.dark,
+    textTheme: const TextTheme(
+      displayLarge: AppTypography.displayLarge,
+      displayMedium: AppTypography.displayMedium,
+      headlineMedium: AppTypography.headlineMedium,
+      titleLarge: AppTypography.titleLarge,
+      titleMedium: AppTypography.titleMedium,
+      bodyLarge: AppTypography.bodyLarge,
+      labelMedium: AppTypography.labelMedium,
+    ),
   );
 }

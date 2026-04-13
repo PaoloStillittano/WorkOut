@@ -3,8 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/app_constants.dart';
 
 class ThemeProvider extends ChangeNotifier {
-  ThemeMode _themeMode = ThemeMode.light;
-  bool _useSystemTheme = true;
+  ThemeMode _themeMode = ThemeMode.dark;
+  bool _useSystemTheme = false;
 
   ThemeMode get themeMode => _themeMode;
   bool get useSystemTheme => _useSystemTheme;
@@ -15,9 +15,9 @@ class ThemeProvider extends ChangeNotifier {
 
   Future<void> loadThemePreference() async {
     final prefs = await SharedPreferences.getInstance();
-    _useSystemTheme = prefs.getBool(AppConstants.keyUseSystemTheme) ?? true;
-    final savedThemeMode = prefs.getString(AppConstants.keyThemeMode) ?? 'light';
-    _themeMode = savedThemeMode == 'dark' ? ThemeMode.dark : ThemeMode.light;
+    _useSystemTheme = prefs.getBool(AppConstants.keyUseSystemTheme) ?? false;
+    final savedThemeMode = prefs.getString(AppConstants.keyThemeMode) ?? 'dark';
+    _themeMode = savedThemeMode == 'light' ? ThemeMode.light : ThemeMode.dark;
     notifyListeners();
   }
 

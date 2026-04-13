@@ -99,7 +99,7 @@ class WorkoutHeatmap extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: hasWorkout
                                     ? primaryColor
-                                        .withOpacity(_getOpacity(intensity))
+                                        .withAlpha((_getOpacity(intensity) * 255).toInt())
                                     : colorScheme.surfaceContainerHighest
                                         .withAlpha(100),
                                 borderRadius: BorderRadius.circular(4),
@@ -144,7 +144,7 @@ class WorkoutHeatmap extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: index == 0
                         ? colorScheme.surfaceContainerHighest.withAlpha(100)
-                        : primaryColor.withOpacity(0.2 + (index * 0.2)),
+                        : primaryColor.withAlpha(((0.2 + (index * 0.2)) * 255).toInt()),
                     borderRadius: BorderRadius.circular(2),
                     border: Border.all(
                       color: colorScheme.outlineVariant.withAlpha(50),

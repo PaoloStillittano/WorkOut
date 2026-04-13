@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/settings_viewmodel.dart';
 import '../../../core/theme/theme_provider.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_dimensions.dart';
+import '../../../core/theme/app_typography.dart';
 
 class ConfigPage extends StatelessWidget {
   const ConfigPage({super.key});
@@ -9,22 +12,28 @@ class ConfigPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Configurazione'),
-        centerTitle: true,
+        title: const Text('Configurazione', style: AppTypography.headlineMedium),
+        centerTitle: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: Consumer2<SettingsViewModel, ThemeProvider>(
         builder: (context, settingsViewModel, themeProvider, child) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
+          return Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: SingleChildScrollView(
+            padding: const EdgeInsets.all(AppDimensions.p16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
                   'Impostazioni Allenamento',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: AppTypography.titleLarge,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppDimensions.p24),
 
                 // Set Configuration
                 _buildNumberInput(
@@ -34,7 +43,7 @@ class ConfigPage extends StatelessWidget {
                   minValue: 1,
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: AppDimensions.p16),
 
                 // Series Configuration
                 _buildNumberInput(
@@ -44,7 +53,7 @@ class ConfigPage extends StatelessWidget {
                   minValue: 1,
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: AppDimensions.p16),
 
                 // Reps Configuration
                 _buildNumberInput(
@@ -57,7 +66,7 @@ class ConfigPage extends StatelessWidget {
                       'Questo valore determina sia il numero di ripetizioni per serie che l\'incremento quando premi + o -',
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: AppDimensions.p16),
 
                 // Rest Time Configuration
                 _buildNumberInput(
@@ -68,55 +77,28 @@ class ConfigPage extends StatelessWidget {
                   step: 5,
                 ),
 
-                const Divider(height: 32),
 
-                const Text(
-                  'Aspetto',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-
-                SwitchListTile(
-                  title: const Text('Usa Tema di Sistema'),
-                  value: themeProvider.useSystemTheme,
-                  onChanged: (value) {
-                    themeProvider.setUseSystemTheme(value);
-                  },
-                ),
-                if (!themeProvider.useSystemTheme)
-                  SwitchListTile(
-                    title: const Text('Tema Scuro'),
-                    value: themeProvider.themeMode == ThemeMode.dark,
-                    onChanged: (value) {
-                      themeProvider.setThemeMode(
-                          value ? ThemeMode.dark : ThemeMode.light);
-                    },
-                  ),
-
-                const SizedBox(height: 32),
 
                 // Save Button
                 SizedBox(
                   width: double.infinity,
+                  height: 60,
                   child: ElevatedButton.icon(
                     icon: const Icon(
                       Icons.save,
-                      size: 24,
+                      size: AppDimensions.iconMedium,
                       color: Colors.white,
                     ),
                     label: const Text(
                       'Salva Configurazione',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
                     ),
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 22, vertical: 14),
+                      backgroundColor: AppColors.primaryBlue,
+                      elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppDimensions.radius12),
                       ),
-                      elevation: 4,
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
                     ),
                     onPressed: () async {
                       await settingsViewModel.saveConfig();
@@ -128,8 +110,10 @@ class ConfigPage extends StatelessWidget {
                 ),
               ],
             ),
-          );
-        },
+           ),
+          ),
+        );
+      },
       ),
     );
   }
@@ -143,30 +127,33 @@ class ConfigPage extends StatelessWidget {
     String? helperText,
     int step = 1,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        if (helperText != null) ...[
-          const SizedBox(height: 4),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(AppDimensions.radius16),
+      ),
+      padding: const EdgeInsets.all(AppDimensions.p16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Text(
-            helperText,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey.shade600,
-              fontStyle: FontStyle.italic,
-            ),
+            label,
+            style: AppTypography.labelLarge,
           ),
-        ],
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.remove_circle_outline),
-              onPressed: () {
+          if (helperText != null) ...[
+            const SizedBox(height: AppDimensions.p4),
+            Text(
+              helperText,
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+          const SizedBox(height: AppDimensions.p16),
+          Row(
+            children: [
+              _buildRoundButton(Icons.remove, () {
                 if (value > (minValue ?? 1)) {
                   final newValue = value - step;
                   if (newValue >= (minValue ?? 1)) {
@@ -175,25 +162,16 @@ class ConfigPage extends StatelessWidget {
                     onChanged(minValue ?? 1);
                   }
                 }
-              },
-            ),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  value.toString(),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 20),
+              }),
+              Expanded(
+                child: Center(
+                  child: Text(
+                    value.toString(),
+                    style: AppTypography.headlineMedium,
+                  ),
                 ),
               ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.add_circle_outline),
-              onPressed: () {
+              _buildRoundButton(Icons.add, () {
                 if (maxValue == null || value < maxValue) {
                   final newValue = value + step;
                   if (maxValue == null || newValue <= maxValue) {
@@ -202,11 +180,31 @@ class ConfigPage extends StatelessWidget {
                     onChanged(maxValue);
                   }
                 }
-              },
-            ),
-          ],
+              }),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRoundButton(IconData icon, VoidCallback onPressed) {
+    return Material(
+      color: AppColors.cardBackgroundLight,
+      shape: const CircleBorder(),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onPressed,
+        child: Container(
+          padding: const EdgeInsets.all(AppDimensions.p12),
+          child: Icon(
+            icon,
+            size: AppDimensions.iconMedium,
+            color: AppColors.textPrimary,
+          ),
         ),
-      ],
+      ),
     );
   }
 }
+
