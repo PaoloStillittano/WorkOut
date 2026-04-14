@@ -77,7 +77,7 @@ class ConfigPage extends StatelessWidget {
                   step: 5,
                 ),
 
-
+                const SizedBox(height: AppDimensions.p32),
 
                 // Save Button
                 SizedBox(
